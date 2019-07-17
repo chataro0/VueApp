@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Marked in the browser</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/github.min.css">
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+  <!-- <link rel="stylesheet" href='static/css/github.css'> -->
+  <!-- <link rel="stylesheet" href="{{url_for('static',filename='/static/css/github.css')}}"> -->
+</head>
+<body>
+    <h2>Markdownの入力フォーム</h2>
+    <div class="col-md-12 ml-auto mr-auto text-left">
+        <form id="editor-form" class="">
+    
+            <div class="form-group border border-default">
+                <textarea type="textarea" class="form-control" name="markdown" placeholder="markdown" rows="15" required>
+## Markedjsを使った簡易エディタ[markedjs](https://github.com/evilstreak/markdown-js)を使ってマークダウン記法でHTMLに変換できるフォームを作成しました。
+                </textarea>
+            </div>
+        </form>
+        <div class="d-flex pt-4">
+            <div class="mr-auto p-2">
+                <button class="btn btn-primary  btn-simple" type="button" onclick="draw_preview()">Preview</button>
+                <span>このボタンで変換しますよ</span>
+            </div>
+        </div>
+    </div>
+    
+    <h2>HTMLに変換した結果</h2>
+    <div class="col-md-12 ml-auto mr-auto text-left" style="border: 3px solid #ebebeb;">
+        <div class="preview" id="marked-preview"></div>
+    </div>
+    
+    <h2>目次を自動生成</h2>
+    <div class="preview" id="headline-preview"></div>
+    <div class="preview" id="headline" hidden></div>
+
+
+    <script src="static/js/lib/marked.min.js"></script>
+    <script src="static/js/lib/highlight.min.js"></script>
+<!--     
+     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+      -->
+    <script>
+      function draw_preview() {
+          var markdown = $('#editor-form [name=markdown]').val();
+          // html
+          var html = marked(markdown)
+          // 目次を作成する
+          headline(markdown);
+
+          $('#marked-preview').html(html);
+          
+      };
+      
+      window.onload = function () {
+    marked_js_render();
+};
+
+/*
+ * 拡張の追加
+ */
+function marked_js_render(){
+    // marked.js + highlight.js
+    var renderer = new marked.Renderer()
+
+    // code syntax hilightの編集
+    renderer.code = function (code, language) {
+        return '<pre' + '><code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
+    };
+    // tableタグ
+    renderer.table = function(header, body) {
+        if (body) body = '<tbody>' + body + '</tbody>';
+    
+        return '<table class="table table-hover">'
+        + '<thead>'
+        + header
+        + '</thead>'
+        + body
+        + '</table>';
+    };
+    marked.setOptions({
+        renderer: renderer,
+    });
+};
+
+window.onload = function () {
+    marked_js_render();
+};
+
+/*
+ * 拡張の追加
+ */function headline(markdown){
+  lines = markdown.split(/\r|\r|/);
+    var headline = [];
+    var in_code = false;
+    for(var it in lines){
+        if(lines[it].match(/^```.?/)){
+            // コードの行内の場合は外す
+            in_code = in_code ? false : true;
+        }
+        if(lines[it][0] == '#' && !in_code){
+            // 先頭の#とスペースを削除して追加
+            headline.push(lines[it].replace(/^#+/, '').trim());
+        }
+    }
+    console.log(headline)
+
+    // 表示用のリスト構文
+    var preview = "<ul>";
+    for(var it in headline){
+        preview += "<li>" 
+                +  headline[it]
+                + "</li>";
+    }
+    preview += "</ul>"
+    // 確認用
+    $('#headline-preview').html(preview);
+    // 更新用
+    $('#headline').html(headline.join(','));
+}
+    </script>
+</body>
+</html>

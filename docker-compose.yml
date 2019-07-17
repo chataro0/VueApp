@@ -6,3 +6,12 @@ services:
     - ./:/usr/share/nginx/html
     ports:
     - 80:80
+  # app:
+  #   build:
+  #     context: ./node
+  #   ports:
+  #   - 8080:8080
+  # sample:
+  #   image: gcr.io/kuar-demo/kuard-amd64:blue
+  #   ports:
+  #   - 8080:8080

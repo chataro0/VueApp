@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja" >
+<head>
+    <meta charset="utf-8"/>
+    <title>MarkDown変換</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/github.min.css">
+    <script src="https://unpkg.com/vue@2.5.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+    <style>
+      textarea {
+        width: 90%;
+        height: 40em;
+        line-height: 1.5em;
+      }
+      div.block {
+        display:inline-block;
+        width: 49%;
+        vertical-align: top;
+      }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- <template> -->
+        <form id="post-form">
+          <div id="editor" class="block">
+            <h2>Input</h2>
+            <textarea v-model="markdownText">input</textarea>
+          </div>
+          <div id="preview" class="block">
+            <h2>Preview</h2>
+            <div v-html="compiledMarkdown"></div>
+          </div>
+        </form>
+      </template>
+</div>
+
+<script>
+let markdownText = "";
+new Vue({
+  el: "#app",
+  data: {
+      markdownText: markdownText
+  },
+  created: function () {
+    marked.setOptions({
+      langPrefix: '',
+      highlight: function(code, lang) {
+        return hljs.highlightAuto(code, [lang]).value
+      }
+    });
+  },
+  computed: {
+    compiledMarkdown: function () {
+      return marked(this.markdownText)
+    }
+  }
+});
+</script>
+</body>

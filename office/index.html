@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja" >
+<head>
+    <meta charset="utf-8"/>
+    <title>はじめてのVue.js</title>
+    <script src="https://unpkg.com/vue@2.5.17"></script>        
+</head>
+<body>
+<div id="project-list">
+<h1>before Member</h1>
+    <tr-member-new :projects="projects"></tr-member-new>
+<h1>Member!</h1>
+</div>
+
+<script>
+
+//オブジェクト定義
+let projects = [
+    {
+      id: 0,
+      name: "フリー",
+      members: [
+        {
+            name: "hoge"
+        },
+        {
+            name: "foo"
+        },
+        {
+            name: "bar"
+        },
+        {
+            name: "aaa"
+        },
+      ]
+    },
+    {
+      id: 1,
+      name: "開発",
+      members: []
+    },
+    {
+      id: 2,
+      name: "運用",
+      members: []
+    },
+    {
+      id: 3,
+      name: "営業",
+      members: []
+    }
+  ];
+//コンポーネント
+Vue.component('tr-member-new', {
+  props: ['projects'],
+//   data: function() {
+//     return {
+//       newMember: {},
+//     };
+//   },
+  methods: {
+    modifyMember: function() {
+      console.log("--event--")
+      console.log(event.target.name)
+      console.log(event.target.select_id)
+      // members.push({name: event.target.name})
+      // const index = new_members.findIndex(m => m.name == event.target.name)
+      // new_members.splice(index, 1)
+    }
+  },
+  template: `
+  <table border="1">
+    <tr>
+      <th>プロジェクト</th>
+      <th>メンバー</th>
+      <th>移動先</th>
+      <th>アクション</th>
+    </tr>
+    <template v-for="project in projects">
+    <tr v-for="(member, index) in project.members">
+      <td v-bind:rowspan="project.members.length" v-if="index == 0">{{ project.name }}</td>
+      <td>{{ member.name }}</td>
+      <td>
+          <select-project :projects="projects" :memeber="member.id"></select-project>
+      </td>
+      <td>
+          <button v-bind:name="member.name" v-on:click="modifyMember">アサイン</button>
+      </td>
+    </tr>
+    </template>
+  </table>
+  `
+});
+
+
+//メンバーを選択するセレクトボックス
+Vue.component('select-project', {
+  props: ['projects', "member"],
+  template: `
+    <select :member="member" id="sel">
+      <option disabled value="">select member</option>
+      <option v-for="project in projects" v-bind:pjid="project.id">{{ project.name }}</option>
+    </select>
+  `
+});
+
+//追加したメンバーを表示
+// Vue.component('tr-member', {
+//   props: ['member', 'members'],
+//   template: `
+//     <tr>
+//       <td>{{ member.name }}</td>
+//       <td><button class="btn btn-danger btn-sm">削除</button></td>
+//     </tr>
+//   `
+// });
+
+
+//親
+new Vue({
+  el: '#project-list',
+  data: {
+    projects: projects
+  }
+});
+</script>
+</body>
